@@ -13,9 +13,9 @@ public class Application {
 
         for (Animals a : animals) {
             for (int i = 0; i < 10; i++) {
-                int rc = a.swim(4);
+                a.swim(4);
                 a.info();
-                rc = a.run(3);
+                int rc = a.run(3);
                 a.info();
                 if (rc < 0)
                     break;
