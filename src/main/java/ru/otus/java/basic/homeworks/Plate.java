@@ -5,6 +5,9 @@ public class Plate {
     private int fullness;
 
     public Plate(int volume) {
+        if(volume <= 0) {
+            throw new IllegalArgumentException("Некорректное значение объема тарелки: " + volume);
+        }
         this.volume = volume;
         fullness = volume;
     }

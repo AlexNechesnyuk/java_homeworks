@@ -7,6 +7,9 @@ public class Cat {
 
     public Cat(String name, int appetite) {
         this.name = name;
+        if(appetite <= 0) {
+            throw new IllegalArgumentException("Некорректное значение аппетита: " + appetite);
+        }
         this.appetite = appetite;
         isFull = false;
     }
@@ -17,9 +20,6 @@ public class Cat {
     }
 
     public void traceInfo() {
-        if (isFull)
-            System.out.println(name + " сыт");
-        else
-            System.out.println(name + " остался голодным");
+        System.out.println(name + (isFull ? " сыт" : " остался голодным"));
     }
 }
