@@ -6,7 +6,7 @@ public class Human implements Transport {
     private String name;
     private Transport currentTransport = this;
     private int endurance;
-    int cost = 2;
+    int enduranceConsumption = 2;
 
     public int getEndurance() {
         return endurance;
@@ -36,17 +36,17 @@ public class Human implements Transport {
         currentTransport = this;
     }
 
-    public boolean move(int distance, Terrain terrian) {
-        return currentTransport.move(distance, terrian, this);
+    public boolean move(int distance, Terrain terrain) {
+        return currentTransport.move(distance, terrain, this);
     }
 
     public boolean move(int distance, Terrain terrian, Human human) {
-        if (distance * cost > endurance) {
+        if (distance * enduranceConsumption > endurance) {
             System.out.println("Недостаточно сил у " + name);
             return false;
         }
         System.out.println(name + " прошел " + distance);
-        endurance -= distance * cost;
+        endurance -= distance * enduranceConsumption;
         return true;
     }
 
