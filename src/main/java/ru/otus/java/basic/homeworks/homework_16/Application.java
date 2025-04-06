@@ -51,7 +51,7 @@ public class Application {
         list.replaceAll(integer -> integer + value);
     }
 
-    private static List employeesNames(List<Employee> list) {
+    private static List<String> employeesNames(List<Employee> list) {
         ArrayList<String> out = new ArrayList<>(list.size());
         for (Employee employee : list) {
             out.add(employee.getName());
@@ -59,7 +59,7 @@ public class Application {
         return out;
     }
 
-    private static List oldEmployeesNames(List<Employee> list, int age) {
+    private static List<String> oldEmployeesNames(List<Employee> list, int age) {
         ArrayList<String> out = new ArrayList<>();
         for (Employee employee : list) {
             if (employee.getAge() >= age)
@@ -73,10 +73,13 @@ public class Application {
         for (Employee employee : list) {
             sumAge += employee.getAge();
         }
-        return sumAge > age * list.size();
+        return sumAge > age * list.size(); // здесь оперируем только целыми
     }
 
     private static Employee theYoungest(List<Employee> list) {
+        if (list.isEmpty()) {
+            throw new IllegalArgumentException("Список сотрудников пуст");
+        }
         Employee youngest = list.get(0);
         for (int i = 1; i < list.size(); i++) {
             if (list.get(i).getAge() < youngest.getAge())
