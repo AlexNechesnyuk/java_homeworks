@@ -10,7 +10,15 @@ public class Application {
         pb.add("qwerty", 654321);
         System.out.println(pb.find("qwerty"));
         System.out.println(pb.find("ytrewq"));
-        System.out.println(pb.containsPhoneNumber(123456));
-        System.out.println(pb.containsPhoneNumber(1234567));
+        int[] testPhones = {123456, 1234567};
+        for(int number : testPhones) {
+            String name = pb.containsPhoneNumber(number);
+            if (name == null) {
+                System.out.println("Номер " + number + " никому не принадлежит");
+            }
+            else {
+                System.out.println("Номер " + number + " принадлежит " + name);
+            }
+        }
     }
 }

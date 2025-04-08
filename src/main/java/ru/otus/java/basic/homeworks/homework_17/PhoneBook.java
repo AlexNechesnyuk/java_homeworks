@@ -10,22 +10,24 @@ public class PhoneBook {
     }
 
     public void add(String name, int phoneNumber) {
-        Set<Integer> phones = find(name);
-        if (phones == null) {
-            phoneBook.put(name, new HashSet<>());
+        if (name == null) {
+            throw new IllegalArgumentException("Имя не может быть null");
         }
-        find(name).add(phoneNumber);
+//        Set<Integer> phones = find(name);
+//        if (phones == null) {
+//            phoneBook.put(name, new HashSet<>());
+//        }
+//        find(name).add(phoneNumber);
+        phoneBook.computeIfAbsent(name, k -> new HashSet<>()).add(phoneNumber);
     }
 
-    public boolean containsPhoneNumber(int phoneNumber) {
+    public String containsPhoneNumber(int phoneNumber) {
         for (Map.Entry<String, Set<Integer>> entry : phoneBook.entrySet()) {
             if (entry.getValue().contains(phoneNumber)) {
-                System.out.println("Телефон " + phoneNumber + " принадлежит " + entry.getKey());
-                return true;
+                return entry.getKey();
             }
         }
-        System.out.println("Телефон " + phoneNumber + " никому не принадлежит");
-        return false;
+        return null;
     }
 
 }
