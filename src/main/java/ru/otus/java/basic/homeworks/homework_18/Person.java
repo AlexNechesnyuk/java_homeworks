@@ -1,26 +1,22 @@
 package ru.otus.java.basic.homeworks.homework_18;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Person {
     private String name;
     private Position position;
     private Long id;
     private static Long counter = 0L;
-    private boolean isManager;
+    private final Set<Position> isManager = new HashSet<>(Arrays.asList(Position.MANAGER, Position.DIRECTOR, Position.BRANCH_DIRECTOR, Position.SENIOR_MANAGER));
+
 
     public Person(String name, Position position) {
         this.name = name;
         this.position = position;
         this.id = counter++;
-        switch (position) {
-            case MANAGER:
-            case DIRECTOR:
-            case BRANCH_DIRECTOR:
-            case SENIOR_MANAGER:
-                isManager = true;
-                break;
-            default:
-                isManager = false;
-        }
     }
 
     public Long getId() {
@@ -28,6 +24,6 @@ public class Person {
     }
 
     public boolean isManager() {
-        return isManager;
+        return isManager.contains(position);
     }
 }
