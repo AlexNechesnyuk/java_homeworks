@@ -32,6 +32,17 @@ public class ClientHandler {
                         if (message.equals("/exit")) {
                             sendMsg("/exitok");
                             break;
+                        } else {
+                            String[] msgParts = message.split(" ", 3);
+                            if (msgParts.length == 3 && msgParts[0].equals("/w")) {
+                                if (!server.privateMessage(msgParts[1], username + " (prvate): " + msgParts[2])) {
+                                    sendMsg("Не удалось отправить сообщение пользователю " + msgParts[1]);
+                                } else {
+                                    sendMsg("Доставлено");
+                                }
+                            } else {
+                                sendMsg("Некорректный формат команды");
+                            }
                         }
 
                     } else {
