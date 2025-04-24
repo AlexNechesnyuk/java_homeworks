@@ -1,19 +1,18 @@
 package ru.otus.java.basic.homeworks.homework_22.server;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Server {
     private int port;
-    private List<ClientHandler> clients;
+    private Map<String, ClientHandler> clients;
 
     public Server(int port) {
         this.port = port;
-        clients = new CopyOnWriteArrayList<>();
+        clients = new ConcurrentHashMap<>();
     }
 
     public void start() {
@@ -29,18 +28,26 @@ public class Server {
     }
 
     public void subscribe(ClientHandler clientHandler) {
-        clients.add(clientHandler);
+        clients.put(clientHandler.getUsername(), clientHandler);
     }
 
     public void unsubscribe(ClientHandler clientHandler) {
         broadcastMessage("Клиент " + clientHandler.getUsername() + " вышел из чата");
         System.out.println("Клиент " + clientHandler.getUsername() + " вышел из чата");
-        clients.remove(clientHandler);
+        clients.remove(clientHandler.getUsername());
     }
 
     public void broadcastMessage(String message) {
-        for (ClientHandler c : clients) {
+        for (ClientHandler c : clients.values()) {
             c.sendMsg(message);
         }
+    }
+
+    public boolean privateMessage(String clientName, String message) {
+        if(clients.containsKey(clientName)) {
+            clients.get(clientName).sendMsg(message);
+            return true;
+        }
+        return false;
     }
 }
