@@ -10,6 +10,7 @@ public class ClientHandler {
     private Server server;
     private DataInputStream in;
     private DataOutputStream out;
+    private boolean authenticated;
 
     private String username;
 
@@ -19,30 +20,56 @@ public class ClientHandler {
         in = new DataInputStream(socket.getInputStream());
         out = new DataOutputStream(socket.getOutputStream());
 
-        username = "user" + socket.getPort();
-        sendMsg("Вы подключились под ником: " + username);
-
         new Thread(() -> {
             try {
                 System.out.println("Клиент подключился " + socket.getPort());
-
+                //Цикл аутентификации
                 while (true) {
+                    sendMsg("Перед работой с чатом необходимо выполнить " +
+                            "аутентификацию '/auth login password' \n" +
+                            "или регистрацию '/reg login password username'");
                     String message = in.readUTF();
                     if (message.startsWith("/")) {
                         if (message.equals("/exit")) {
                             sendMsg("/exitok");
                             break;
-                        } else {
-                            String[] msgParts = message.split(" ", 3);
-                            if (msgParts.length == 3 && msgParts[0].equals("/w")) {
-                                if (!server.privateMessage(msgParts[1], username + " (prvate): " + msgParts[2])) {
-                                    sendMsg("Не удалось отправить сообщение пользователю " + msgParts[1]);
-                                } else {
-                                    sendMsg("Доставлено");
-                                }
-                            } else {
-                                sendMsg("Некорректный формат команды");
+                        }
+                        ///auth login password
+                        if (message.startsWith("/auth ")) {
+                            String token[] = message.split(" ");
+                            if (token.length != 3) {
+                                sendMsg("Неверный формат команды /auth");
+                                continue;
                             }
+                            if (server.getAuthenticatedProvider()
+                                    .authenticate(this, token[1], token[2])) {
+                                authenticated = true;
+                                break;
+                            }
+                        }
+                        ///reg login password username
+                        if (message.startsWith("/reg ")) {
+                            String token[] = message.split(" ");
+                            if (token.length != 4) {
+                                sendMsg("Неверный формат команды /reg");
+                                continue;
+                            }
+                            if (server.getAuthenticatedProvider()
+                                    .registration(this, token[1], token[2], token[3])) {
+                                authenticated = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                //Цикл работы
+                while (authenticated) {
+                    String message = in.readUTF();
+                    if (message.startsWith("/")) {
+                        if (message.equals("/exit")) {
+                            sendMsg("/exitok");
+                            break;
                         }
 
                     } else {

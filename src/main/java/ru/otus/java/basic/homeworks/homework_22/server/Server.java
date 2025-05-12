@@ -9,10 +9,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Server {
     private int port;
     private Map<String, ClientHandler> clients;
+    private AuthenticatedProvider authenticatedProvider;
 
     public Server(int port) {
         this.port = port;
         clients = new ConcurrentHashMap<>();
+        authenticatedProvider = new InMemoryAuthenticatedProvider(this);
     }
 
     public void start() {
@@ -50,4 +52,13 @@ public class Server {
         }
         return false;
     }
+
+    public boolean isUsernameBusy(String username) {
+        return clients.containsKey(username);
+    }
+
+    public AuthenticatedProvider getAuthenticatedProvider() {
+        return authenticatedProvider;
+    }
+
 }
