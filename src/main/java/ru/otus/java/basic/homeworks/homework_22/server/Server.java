@@ -22,7 +22,7 @@ public class Server {
             System.out.println("Сервер запущен на порту " + port);
             while (true) {
                 Socket socket = serverSocket.accept();
-                subscribe(new ClientHandler(socket, this));
+                new ClientHandler(socket, this);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -48,6 +48,14 @@ public class Server {
     public boolean privateMessage(String clientName, String message) {
         if(clients.containsKey(clientName)) {
             clients.get(clientName).sendMsg(message);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean clientDisconnect(String clientName) {
+        if(clients.containsKey(clientName)) {
+            clients.get(clientName).disconnect();
             return true;
         }
         return false;
