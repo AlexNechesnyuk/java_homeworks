@@ -71,7 +71,14 @@ public class ClientHandler {
                             sendMsg("/exitok");
                             break;
                         }
-
+                        if (message.startsWith("/kick") && server.getAuthenticatedProvider().isAdmin(username)) {
+                            String token[] = message.split(" ");
+                            if (token.length == 2) {
+                                if (server.clientDisconnect(token[1])) {
+                                    System.out.println("client " + token[1] + " disconnected");
+                                }
+                            }
+                        }
                     } else {
                         server.broadcastMessage(username + ": " + message);
                     }

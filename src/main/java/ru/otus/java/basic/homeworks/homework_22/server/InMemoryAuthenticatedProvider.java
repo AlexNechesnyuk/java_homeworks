@@ -8,11 +8,13 @@ public class InMemoryAuthenticatedProvider implements AuthenticatedProvider {
         private String login;
         private String password;
         private String username;
+        private boolean isAdmin;
 
-        public User(String login, String password, String username) {
+        public User(String login, String password, String username, boolean isAdmin) {
             this.login = login;
             this.password = password;
             this.username = username;
+            this.isAdmin = isAdmin;
         }
     }
 
@@ -22,9 +24,10 @@ public class InMemoryAuthenticatedProvider implements AuthenticatedProvider {
     public InMemoryAuthenticatedProvider(Server server) {
         this.server = server;
         this.users = new CopyOnWriteArrayList<>();
-        this.users.add(new User("qwe", "qwe", "qwe1"));
-        this.users.add(new User("asd", "asd", "asd1"));
-        this.users.add(new User("zxc", "zxc", "zxc1"));
+        this.users.add(new User("qwe", "qwe", "qwe1", false));
+        this.users.add(new User("asd", "asd", "asd1", false));
+        this.users.add(new User("zxc", "zxc", "zxc1", false));
+        this.users.add(new User("admin", "admin", "admin", true));
     }
 
     @Override
@@ -32,10 +35,10 @@ public class InMemoryAuthenticatedProvider implements AuthenticatedProvider {
         System.out.println("Сервис аунтентификации запущен: InMemory режим");
     }
 
-    private String getUsernameByLoginAndPassword(String login, String password) {
+    private String[] getUserInfoByLoginAndPassword(String login, String password) {
         for (User user : users) {
             if (user.login.equals(login.toLowerCase()) && user.password.equals(password)) {
-                return user.username;
+                return new String[] {user.username, (user.isAdmin ? "admin" : "user")};
             }
         }
         return null;
@@ -61,18 +64,18 @@ public class InMemoryAuthenticatedProvider implements AuthenticatedProvider {
 
     @Override
     public boolean authenticate(ClientHandler clientHandler, String login, String password) {
-        String authUsername = getUsernameByLoginAndPassword(login, password);
+        String[] authUsername = getUserInfoByLoginAndPassword(login, password);
         if (authUsername == null) {
             clientHandler.sendMsg("Некорректный логин/пароль");
             return false;
         }
-        if (server.isUsernameBusy(authUsername)) {
+        if (server.isUsernameBusy(authUsername[0])) {
             clientHandler.sendMsg("Указанная учетная запись уже занята");
             return false;
         }
-        clientHandler.setUsername(authUsername);
+        clientHandler.setUsername(authUsername[0]);
         server.subscribe(clientHandler);
-        clientHandler.sendMsg("/authok " + authUsername);
+        clientHandler.sendMsg("/authok " + authUsername[0] + " " + authUsername[1]);
         return true;
     }
 
@@ -98,10 +101,20 @@ public class InMemoryAuthenticatedProvider implements AuthenticatedProvider {
             clientHandler.sendMsg("Такое имя пользователя уже занято");
             return false;
         }
-        users.add(new User(login, password, username));
+        users.add(new User(login, password, username, false));
         clientHandler.setUsername(username);
         server.subscribe(clientHandler);
         clientHandler.sendMsg("/regok " + username);
         return true;
+    }
+
+    @Override
+    public boolean isAdmin(String login) {
+        for (User user : users) {
+            if (user.login.equals(login.toLowerCase())) {
+                return user.isAdmin;
+            }
+        }
+        return false;
     }
 }
