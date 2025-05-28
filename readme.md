@@ -1,3 +1,5 @@
+
+```plantuml
 @startuml
 actor Пользователь
 participant Сервис
@@ -26,3 +28,4 @@ else Успешно
     Сервис --> Пользователь: Результат операции
 end
 @enduml
+'''
