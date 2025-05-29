@@ -1,5 +1,7 @@
 package ru.otus.java.basic.homeworks.homework_22.server;
 
+import ru.otus.java.basic.homeworks.homework_22.server.authenticate.SqlAuthenticatedProvider;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -14,7 +16,7 @@ public class Server {
     public Server(int port) {
         this.port = port;
         clients = new ConcurrentHashMap<>();
-        authenticatedProvider = new InMemoryAuthenticatedProvider(this);
+        authenticatedProvider = new SqlAuthenticatedProvider(this);
     }
 
     public void start() {
