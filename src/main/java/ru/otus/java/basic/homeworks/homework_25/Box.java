@@ -23,6 +23,8 @@ public class Box<T extends Fruit> {
     }
 
     public void moveToAnotherBox(Box<? super T> other) {
+        if (this == other)
+            return;
         for (T fruit: items){
             other.addFruit(fruit);
         }
